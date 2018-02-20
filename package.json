@@ -1,0 +1,28 @@
+{
+  "name": "react-stateful",
+  "version": "1.0.0",
+  "main": "dist/react-stateful.js",
+  "author": "Didier Franc <didierfranc@me.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c -m && yarn size",
+    "size": "gzip -c 'dist/react-stateful.js' | echo gzipped → `wc -c` bytes"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/preset-flow": "^7.0.0-beta.40",
+    "@babel/preset-react": "^7.0.0-beta.40",
+    "rollup": "^0.56.2",
+    "rollup-plugin-babel": "^4.0.0-beta.0",
+    "rollup-plugin-uglify": "^3.0.0"
+  },
+  "dependencies": {
+    "fbjs": "^0.8.16",
+    "global": "^4.3.2",
+    "react": "^16.3.0-alpha.1"
+  },
+  "description": "React context store",
+  "repository": "git@github.com:didierfranc/react-stateful.git"
+}

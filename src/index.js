@@ -2,6 +2,8 @@
 import React, { Component, createContext } from 'react'
 import shallowEqual from 'fbjs/lib/shallowEqual'
 
+const err = () => console.error('Provider is not rendered yet')
+
 class Prevent extends Component<*> {
   shouldComponentUpdate = ({ state, select }) =>
     select.some(
@@ -19,16 +21,21 @@ export const initStore: Function = store => {
   let self
   const Context = createContext()
 
-  const getState = () =>
-    self ? self.state : console.error('Provider is not rendered yet')
+  const getState = () => (self ? self.state : err())
 
   const actions = Object.keys(store.actions).reduce(
     (r, v) => ({
       ...r,
-      [v]: () =>
-        self
-          ? self.setState(store.actions[v](self.state))
-          : console.error('Provider is not rendered yet'),
+      [v]: () => {
+        if (self) {
+          let result = store.actions[v](self.state)
+          result.then
+            ? result.then(result => self.setState(result))
+            : self.setState(result)
+        } else {
+          err()
+        }
+      },
     }),
     {},
   )

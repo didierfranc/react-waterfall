@@ -5,7 +5,7 @@
   "author": "Didier Franc <didierfranc@me.com>",
   "license": "MIT",
   "scripts": {
-    "build": "rollup -c -m && yarn size",
+    "build": "rollup -c -mw",
     "size": "gzip -c 'dist/react-stateful.js' | echo gzipped → `wc -c` bytes"
   },
   "devDependencies": {

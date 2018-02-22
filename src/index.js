@@ -50,6 +50,14 @@ export const initStore: Function = store => {
     </Context.Consumer>
   )
 
+  const connect = select => Cmpnt => props => {
+    return (
+      <Consumer select={select}>
+        {({ state }) => <Cmpnt {...props} state={state} actions={actions} />}
+      </Consumer>
+    )
+  }
+
   class Provider extends Component<*> {
     state = store.initialState
 
@@ -76,5 +84,6 @@ export const initStore: Function = store => {
     Consumer,
     actions,
     getState,
+    connect,
   }
 }

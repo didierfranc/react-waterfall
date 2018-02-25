@@ -26,9 +26,9 @@ export const initStore: Function = store => {
   const actions = Object.keys(store.actions).reduce(
     (r, v) => ({
       ...r,
-      [v]: () => {
+      [v]: (...args) => {
         if (self) {
-          let result = store.actions[v](self.state)
+          let result = store.actions[v](self.state, ...args)
           result.then
             ? result.then(result => self.setState(result))
             : self.setState(result)

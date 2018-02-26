@@ -17,11 +17,14 @@ class Prevent extends Component<*> {
   }
 }
 
-export const initStore: Function = store => {
-  let self
+export const initStore: Function = (store, ...middlewares) => {
+  let self, initializedMiddlewares
   const Context = createContext()
 
   const getState = () => (self ? self.state : err())
+  const setState = (action, state) => {
+    self.setState(state, () => initializedMiddlewares.forEach(m => m(action)))
+  }
 
   const actions = Object.keys(store.actions).reduce(
     (r, v) => ({
@@ -30,8 +33,8 @@ export const initStore: Function = store => {
         if (self) {
           let result = store.actions[v](self.state, ...args)
           result.then
-            ? result.then(result => self.setState(result))
-            : self.setState(result)
+            ? result.then(result => setState(v, result))
+            : setState(v, result)
         } else {
           err()
         }
@@ -63,6 +66,7 @@ export const initStore: Function = store => {
 
     componentDidMount() {
       self = this
+      initializedMiddlewares = middlewares.map(m => m(store, self))
     }
 
     render() {

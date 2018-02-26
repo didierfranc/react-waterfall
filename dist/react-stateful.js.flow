@@ -1,0 +1,24 @@
+// @flow
+declare module 'react-stateful' {
+  declare type State = {}
+  declare type Self = {}
+  declare type Actions = { [string]: (State) => {} }
+
+  declare type Store = {
+    initialState: State,
+    actions: Actions,
+  }
+
+  declare type Middleware = (Store, Self) => String => void
+
+  declare export var initStore: (
+    state: {},
+    middlewares?: [Middleware],
+  ) => {
+    Provider: React$Component<*>,
+    Consumer: React$Component<*>,
+    connect: ([string]) => (React$Component<*>) => React$Component<*>,
+    actions: Actions,
+    getState: () => State,
+  }
+}

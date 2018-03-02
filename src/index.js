@@ -64,7 +64,7 @@ export const initStore: Function = (store, ...middlewares) => {
   class Provider extends Component<*> {
     state = store.initialState
 
-    componentDidMount() {
+    componentWillMount() {
       self = this
       initializedMiddlewares = middlewares.map(m => m(store, self))
     }

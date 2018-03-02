@@ -2,7 +2,7 @@
 import React, { Component, createContext } from 'react'
 import shallowEqual from 'fbjs/lib/shallowEqual'
 
-const err = () => console.error('Provider is not rendered yet')
+const err = () => console.error('Provider is not initialized yet')
 
 class Prevent extends Component<*> {
   shouldComponentUpdate = ({ state, select }) =>
@@ -19,11 +19,17 @@ class Prevent extends Component<*> {
 
 export const initStore: Function = (store, ...middlewares) => {
   let self, initializedMiddlewares
+  let subscriptions = []
   const Context = createContext()
 
   const getState = () => (self ? self.state : err())
   const setState = (action, state) => {
+    subscriptions.forEach(fn => fn(action, state))
     self.setState(state, () => initializedMiddlewares.forEach(m => m(action)))
+  }
+
+  const subscribe = fn => {
+    subscriptions = [...subscriptions, fn]
   }
 
   const actions = Object.keys(store.actions).reduce(
@@ -62,10 +68,10 @@ export const initStore: Function = (store, ...middlewares) => {
   }
 
   class Provider extends Component<*> {
-    state = store.initialState
-
-    componentDidMount() {
+    constructor() {
+      super()
       self = this
+      this.state = store.initialState
       initializedMiddlewares = middlewares.map(m => m(store, self))
     }
 
@@ -89,5 +95,6 @@ export const initStore: Function = (store, ...middlewares) => {
     actions,
     getState,
     connect,
+    subscribe,
   }
 }

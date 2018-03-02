@@ -20,7 +20,12 @@ const store = {
 
 const { Provider, connect } = initStore(store)
 
-let Count = ({ state }) => <span>{state.count}</span>
+let Count = ({ state, actions }) => (
+  <>
+    {state.count}
+    <button onClick={actions.increment}>+</button>
+  </>
+)
 
 Count = connect(['count'])(Count)
 

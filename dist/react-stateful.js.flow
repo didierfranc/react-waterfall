@@ -2,7 +2,9 @@
 declare module 'react-stateful' {
   declare type State = {}
   declare type Self = {}
-  declare type Actions = { [string]: (State) => {} }
+  declare type Action = (State) => {}
+  declare type Actions = { [string]: Action }
+  declare type Subscriber = (Action, State) => void
 
   declare type Store = {
     initialState: State,
@@ -20,5 +22,6 @@ declare module 'react-stateful' {
     connect: ([string]) => (React$Component<*>) => React$Component<*>,
     actions: Actions,
     getState: () => State,
+    subscribe: Subscriber,
   }
 }

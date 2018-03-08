@@ -37,7 +37,10 @@ export const initStore: Function = (store, ...middlewares) => {
       ...r,
       [v]: (...args) => {
         if (self) {
-          let result = store.actions[v](self.state, ...args)
+          let result = store.actions[v](
+            { state: self.state, setState: setState.bind(null, v) },
+            ...args
+          )
           result.then
             ? result.then(result => setState(v, result))
             : setState(v, result)

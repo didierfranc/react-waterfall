@@ -1,15 +1,15 @@
-# react-stateful
+# react-waterfall
 
 ## How to use it ?
 
 ```sh
-yarn add https://github.com/didierfranc/react-stateful.git
+yarn add react-waterfall
 ```
 
 Here is an example of the simplest implementation.
 
 ```js
-import { initStore } from 'react-stateful'
+import { initStore } from 'react-waterfall'
 
 const store = {
   initialState: { count: 0 },
@@ -38,11 +38,11 @@ const App = () => (
 
 ## Types
 
-You can explore types [here](dist/react-stateful.js.flow)
+You can explore types [here](dist/react-waterfall.js.flow)
 
 ## Advanced
 
-Advanced examples are available [here](https://github.com/didierfranc/react-stateful-example)
+Advanced examples are available [here](https://github.com/didierfranc/react-waterfall-example)
 
 ![screenshot](screenshot.png)
 

@@ -1,5 +1,5 @@
 // @flow
-declare module 'react-stateful' {
+declare module 'react-waterfall' {
   declare type State = {}
   declare type Self = {}
   declare type Action = (State) => {}

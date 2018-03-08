@@ -4,7 +4,7 @@ import uglify from 'rollup-plugin-uglify'
 export default {
   input: 'src/index.js',
   output: {
-    file: 'dist/react-stateful.js',
+    file: 'dist/react-waterfall.js',
     format: 'cjs',
   },
   plugins: [babel({ exclude: 'node_modules/**' }), uglify()],

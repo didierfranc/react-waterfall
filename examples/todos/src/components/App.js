@@ -23,7 +23,6 @@ const App = () => (
       )
     }}
   </Consumer>
-
 )
 
 export default App

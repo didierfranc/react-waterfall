@@ -5,19 +5,19 @@ import AddTodo from '../containers/AddTodo'
 import TodoList from '../components/TodoList'
 
 const App = () => (
-  <Consumer select={['todos', 'visibilityFilter']}>
-    {({ state, actions }) => {
+  <Consumer mapStateToProps={state => ({ todos: state.todos, visibilityFilter: state.visibilityFilter })}>
+    {({ todos, visibilityFilter, actions }) => {
       return (
         <div>
           <AddTodo addTodo={actions.addTodo} />
           <TodoList
-            todos={state.todos}
+            todos={todos}
             toggleTodo={actions.toggleTodo}
             visibilityFilter={state.visibilityFilter}
           />
           <Footer
             setVisibilityFilter={actions.setVisibilityFilter}
-            visibilityFilter={state.visibilityFilter}
+            visibilityFilter={visibilityFilter}
           />
         </div>
       )

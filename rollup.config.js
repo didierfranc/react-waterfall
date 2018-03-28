@@ -8,5 +8,5 @@ export default {
     format: 'cjs',
   },
   plugins: [babel({ exclude: 'node_modules/**' }), uglify()],
-  external: ['react', 'fbjs/lib/shallowEqual'],
+  external: ['react'],
 }

@@ -20,14 +20,14 @@ const store = {
 
 const { Provider, connect } = initStore(store)
 
-let Count = ({ state, actions }) => (
+let Count = ({ count, actions }) => (
   <>
-    {state.count}
+    {count}
     <button onClick={actions.increment}>+</button>
   </>
 )
 
-Count = connect(['count'])(Count)
+Count = connect(state => ({ count: state.count }))(Count)
 
 const App = () => (
   <Provider>

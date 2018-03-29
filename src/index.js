@@ -1,19 +1,12 @@
 // @flow
-import React, { Component, createContext } from 'react'
-import shallowEqual from 'fbjs/lib/shallowEqual'
+import React, { Component, PureComponent, createContext } from 'react'
 
 const err = () => console.error('Provider is not initialized yet')
 
-class Prevent extends Component<*> {
-  shouldComponentUpdate = ({ state, select }) =>
-    select.some(
-      selector => !shallowEqual(this.props.state[selector], state[selector]),
-    )
-
+class Prevent extends PureComponent<*> {
   render() {
-    const { actions, select, state, children } = this.props
-    const selected = select.reduce((r, v) => ({ ...r, [v]: state[v] }), {})
-    return children({ state: selected, actions })
+    const { _children, ...rest } = this.props;
+    return _children()(rest)
   }
 }
 
@@ -49,22 +42,34 @@ export const initStore: Function = (store, ...middlewares) => {
     {},
   )
 
-  const Consumer = ({ children, select }) => (
-    <Context.Consumer>
-      {({ state, actions }) => (
-        <Prevent select={select} state={state} actions={actions}>
-          {children}
-        </Prevent>
-      )}
-    </Context.Consumer>
-  )
+  class Consumer extends Component {
 
-  const connect = select => Cmpnt => props => {
-    return (
-      <Consumer select={select}>
-        {({ state }) => <Cmpnt {...props} state={state} actions={actions} />}
+    // We do this so the sCU of Prevent will ignore the children prop
+    _children = () => this.props.children
+
+    prevent = ({ state, actions }) => {
+      const { mapStateToProps } = this.props
+      return (
+        <Prevent {...mapStateToProps(state)} actions={actions} _children={this._children} />
+      )
+    }
+
+    render() {
+      return (
+        <Context.Consumer>
+          {this.prevent}
+        </Context.Consumer>
+      )
+    }
+  }
+
+  const connect = mapStateToProps => WrappedComponent => {
+    const ConnectComponent = props =>
+      <Consumer mapStateToProps={mapStateToProps}>
+        {injectedProps => <WrappedComponent {...props} {...injectedProps} />}
       </Consumer>
-    )
+    ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`
+    return ConnectComponent
   }
 
   class Provider extends Component<*> {

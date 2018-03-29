@@ -16,9 +16,9 @@ export const initStore: Function = (store, ...middlewares) => {
   const Context = createContext()
 
   const getState = () => (self ? self.state : err())
-  const setState = (action, state) => {
+  const setState = (action, state, args) => {
     subscriptions.forEach(fn => fn(action, state))
-    self.setState(state, () => initializedMiddlewares.forEach(m => m(action)))
+    self.setState(state, () => initializedMiddlewares.forEach(m => m(action, args)))
   }
 
   const subscribe = fn => {
@@ -32,8 +32,8 @@ export const initStore: Function = (store, ...middlewares) => {
         if (self) {
           let result = store.actions[v](self.state, ...args)
           result.then
-            ? result.then(result => setState(v, result))
-            : setState(v, result)
+            ? result.then(result => setState(v, result, args))
+            : setState(v, result, args)
         } else {
           err()
         }

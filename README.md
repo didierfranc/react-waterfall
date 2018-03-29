@@ -27,7 +27,7 @@ let Count = ({ count, actions }) => (
   </>
 )
 
-Count = connect(state => ({ count: state: count }))(Count)
+Count = connect(state => ({ count: state.count }))(Count)
 
 const App = () => (
   <Provider>

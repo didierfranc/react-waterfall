@@ -77,7 +77,7 @@ export const initStore: Function = (store, ...middlewares) => {
       super()
       self = this
       this.state = store.initialState
-      initializedMiddlewares = middlewares.map(m => m(store, self))
+      initializedMiddlewares = middlewares.map(m => m(store, self, actions))
     }
 
     render() {

@@ -17,7 +17,7 @@ export const initStore: Function = (store, ...middlewares) => {
 
   const getState = () => (self ? self.state : err())
   const setState = (action, state, args) => {
-    subscriptions.forEach(fn => fn(action, state))
+    subscriptions.forEach(fn => fn(action, state, args))
     self.setState(state, () => initializedMiddlewares.forEach(m => m(action, args)))
   }
 

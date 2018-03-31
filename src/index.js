@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, PureComponent, createContext } from 'react'
+import React, { Component, PureComponent, createContext, forwardRef } from 'react'
 
 const err = () => console.error('Provider is not initialized yet')
 
@@ -64,10 +64,10 @@ export const initStore: Function = (store, ...middlewares) => {
   }
 
   const connect = mapStateToProps => WrappedComponent => {
-    const ConnectComponent = props =>
+    const ConnectComponent = forwardRef((props, ref) =>
       <Consumer mapStateToProps={mapStateToProps}>
-        {injectedProps => <WrappedComponent {...props} {...injectedProps} />}
-      </Consumer>
+        {injectedProps => <WrappedComponent {...props} {...injectedProps} ref={ref}/>}
+      </Consumer>)
     ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`
     return ConnectComponent
   }
@@ -77,16 +77,19 @@ export const initStore: Function = (store, ...middlewares) => {
       super()
       self = this
       this.state = store.initialState
-      initializedMiddlewares = middlewares.map(m => m(store, self, actions))
+      initializedMiddlewares = middlewares.map(m => m(store, self))
+      this.value = { actions, state: this.state }
     }
 
     render() {
+      if (this.state !== this.value.state) {
+        // If state was changed then recreate `this.value` so it will have a different reference
+        // Explained here: https://reactjs.org/docs/context.html#caveats
+        this.value = { actions, state: this.state }
+      }
       return (
         <Context.Provider
-          value={{
-            state: this.state,
-            actions,
-          }}
+          value={this.value}
         >
           {this.props.children}
         </Context.Provider>

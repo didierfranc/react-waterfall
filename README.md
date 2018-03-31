@@ -6,7 +6,7 @@
 yarn add react-waterfall
 ```
 
-Here is an example of the simplest implementation.
+Here is an example of a basic implementation.
 
 ```js
 import { initStore } from 'react-waterfall'
@@ -36,6 +36,21 @@ const App = () => (
 )
 ```
 
+You will find more examples [here](https://github.com/didierfranc/react-waterfall/tree/master/examples).
+
+# Redux DevTools
+
+If you want you can use Redux DevTools with `react-waterfall` thanks to [this middleware](https://github.com/elisherer/react-waterfall-redux-devtools-middleware).
+
+```js
+import { initStore } from 'react-waterfall'
+import devtools from 'react-waterfall-redux-devtools-middleware'
+
+const prod = process.env.NODE_ENV === 'production'
+
+export const { Provider, connect } = initStore(store, prod && devtools())
+```
+
 ## Types
 
 You can explore types [here](dist/react-waterfall.js.flow)
@@ -43,8 +58,6 @@ You can explore types [here](dist/react-waterfall.js.flow)
 ## Advanced
 
 Advanced examples are available [here](https://github.com/didierfranc/react-waterfall-example)
-
-![screenshot](screenshot.png)
 
 ## Links
 

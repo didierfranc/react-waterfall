@@ -7,17 +7,24 @@
   "files": ["package.json", "README.md", "dist/"],
   "scripts": {
     "build": "rollup -c -mw",
-    "size": "gzip -c 'dist/react-waterfall.js' | echo gzipped → `wc -c` bytes"
+    "size": "gzip -c 'dist/react-waterfall.js' | echo gzipped → `wc -c` bytes",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.40",
-    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
-    "@babel/preset-env": "^7.0.0-beta.40",
-    "@babel/preset-flow": "^7.0.0-beta.40",
-    "@babel/preset-react": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/preset-flow": "^7.0.0-beta.42",
+    "@babel/preset-react": "^7.0.0-beta.42",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^22.4.3",
     "flow-bin": "^0.66.0",
+    "jest": "^22.4.3",
+    "raf": "^3.4.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
+    "react-test-renderer": "^16.3.0",
     "rollup": "^0.56.2",
     "rollup-plugin-babel": "^4.0.0-beta.0",
     "rollup-plugin-uglify": "^3.0.0"
@@ -27,5 +34,6 @@
     "react-dom": "^16.3.0"
   },
   "description": "React store built on top of the new context API",
-  "repository": "git@github.com:didierfranc/react-waterfall.git"
+  "repository": "git@github.com:didierfranc/react-waterfall.git",
+  "jest": { "setupFiles": [ "raf/polyfill" ] }
 }

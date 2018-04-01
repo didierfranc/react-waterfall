@@ -48,7 +48,7 @@ import devtools from 'react-waterfall-redux-devtools-middleware'
 
 const prod = process.env.NODE_ENV === 'production'
 
-export const { Provider, connect } = initStore(store, prod && devtools())
+export const { Provider, connect } = initStore(store, !prod && devtools())
 ```
 
 ## Types

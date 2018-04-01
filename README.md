@@ -51,6 +51,30 @@ const prod = process.env.NODE_ENV === 'production'
 export const { Provider, connect } = initStore(store, !prod && devtools())
 ```
 
+## Observables
+
+You can speed up your performance (in case the map state to props function is costy)
+by providing an array of observable fields:
+
+```js
+const store = {
+  initialState: { count: 0, user: null },
+  actions: {
+    increment: ({ count }) => ({ count: count + 1 }),
+  },
+  observables: ['count']
+}
+```
+
+* It is an array of field names, straight under the state object
+* It doesn't have to be all the field in the state
+
+Then use it like:
+```js
+Count = connect(state => ({ count: state.count }), ['count'])(Count)
+```
+
+
 ## Types
 
 You can explore types [here](dist/react-waterfall.js.flow)

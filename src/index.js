@@ -13,7 +13,29 @@ class Prevent extends PureComponent<*> {
 export const initStore: Function = (store, ...middlewares) => {
   let self, initializedMiddlewares
   let subscriptions = []
-  const Context = createContext()
+
+  let calculateChangedBits = undefined
+  let observableMap
+  if (store.observables) {
+    if (!Array.isArray(store.observables) || typeof store.observables[0] !== 'string') {
+      console.log(`[react-waterfall] Expected 'observables' to be an array of strings. Instead received: ${typeof store.observables}`)
+    }
+    else if (store.observables.length > 29) { // We ask
+      console.log(`[react-waterfall] Expected maximum length of 'observables' array to be 29. Instead received: ${store.observables.length}`)
+    }
+    else {
+      observableMap = store.observables.reduce((map, key, idx) => {
+        map[key] = 1 << (idx + 1) // key: 2^(index+1) - starting with 2 (=2^1)
+        return map
+      }, { '*': 1 }) // Everything is 1
+      calculateChangedBits = (oldState, newState) => store.observables
+        .filter(key => oldState[key] !== newState[key]) // only changed fields
+        .reduce((sum, key) => sum + (observableMap[key] || 0),
+          oldState !== newState ? 1 : 0) // sum their values, starting with the LSB if state was changed at all
+    }
+  }
+
+  const Context = createContext(store.initialState, calculateChangedBits)
 
   const getState = () => (self ? self.state : err())
   const setState = (action, state, args) => {
@@ -43,7 +65,10 @@ export const initStore: Function = (store, ...middlewares) => {
   )
 
   class Consumer extends Component {
-
+    props: {
+      children: Function,
+      observed: Number
+    }
     // We do this so the sCU of Prevent will ignore the children prop
     _children = () => this.props.children
 
@@ -55,17 +80,18 @@ export const initStore: Function = (store, ...middlewares) => {
     }
 
     render() {
+      const { observed } = this.props
       return (
-        <Context.Consumer>
+        <Context.Consumer unstable_observedBits={observed && observed.reduce((sum, key) => sum + (observableMap[key] || 0), 0)} >
           {this.prevent}
         </Context.Consumer>
       )
     }
   }
 
-  const connect = mapStateToProps => WrappedComponent => {
+  const connect = (mapStateToProps, observed) => WrappedComponent => {
     const ConnectComponent = forwardRef((props, ref) =>
-      <Consumer mapStateToProps={mapStateToProps}>
+      <Consumer mapStateToProps={mapStateToProps} observed={observed}>
         {injectedProps => <WrappedComponent {...props} {...injectedProps} ref={ref}/>}
       </Consumer>)
     ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`

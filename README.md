@@ -44,11 +44,13 @@ If you want you can use Redux DevTools with `react-waterfall` thanks to [this mi
 
 ```js
 import { initStore } from 'react-waterfall'
-import devtools from 'react-waterfall-redux-devtools-middleware'
 
-const prod = process.env.NODE_ENV === 'production'
+const middleware = [];
+if (__DEV__) { // __DEV__ should be false in production so block will be considered dead code
+  middleware.push(require("react-waterfall-redux-devtools-middleware")());
+}
 
-export const { Provider, connect } = initStore(store, !prod && devtools())
+export const { Provider, connect } = initStore(store, ...middleware);
 ```
 
 ## Types

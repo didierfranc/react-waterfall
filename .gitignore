@@ -1,4 +1,6 @@
 coverage
+*.iml
+*.log
 node_modules
 .DS_Store
 .idea # IntelliJ IDE

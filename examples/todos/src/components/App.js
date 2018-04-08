@@ -1,33 +1,25 @@
 import React from 'react'
-import { Consumer } from '../store'
+import { connect } from 'react-waterfall'
 import Footer from './Footer'
 import AddTodo from '../containers/AddTodo'
 import TodoList from '../components/TodoList'
 
-const App = () => (
-  <Consumer
-    mapStateToProps={state => ({
-      todos: state.todos,
-      visibilityFilter: state.visibilityFilter,
-    })}
-  >
-    {({ todos, visibilityFilter, actions }) => {
-      return (
-        <div>
-          <AddTodo addTodo={actions.addTodo} />
-          <TodoList
-            todos={todos}
-            toggleTodo={actions.toggleTodo}
-            visibilityFilter={visibilityFilter}
-          />
-          <Footer
-            setVisibilityFilter={actions.setVisibilityFilter}
-            visibilityFilter={visibilityFilter}
-          />
-        </div>
-      )
-    }}
-  </Consumer>
+const App = ({ todos, visibilityFilter, actions }) => (
+  <div>
+    <AddTodo addTodo={actions.addTodo} />
+    <TodoList
+      todos={todos}
+      toggleTodo={actions.toggleTodo}
+      visibilityFilter={visibilityFilter}
+    />
+    <Footer
+      setVisibilityFilter={actions.setVisibilityFilter}
+      visibilityFilter={visibilityFilter}
+    />
+  </div>
 )
 
-export default App
+export default connect(state => ({
+  todos: state.todos,
+  visibilityFilter: state.visibilityFilter,
+}))(App)

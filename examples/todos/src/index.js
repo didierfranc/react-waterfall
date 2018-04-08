@@ -1,10 +1,11 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { Provider } from './store'
+import { Provider } from 'react-waterfall'
+import store from './store'
 import App from './components/App'
 
 render(
-  <Provider>
+  <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('root'),

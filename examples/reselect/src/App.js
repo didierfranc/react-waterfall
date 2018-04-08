@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { connect } from './store'
+import { connect } from 'react-waterfall'
 
 class App extends Component {
   render() {

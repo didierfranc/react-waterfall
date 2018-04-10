@@ -9,7 +9,10 @@
     "build": "rollup -c -mw",
     "size": "gzip -c 'dist/react-waterfall.js' | echo gzipped → `wc -c` bytes",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "ci": "yarn coverage --ci -i",
+    "ci:cov": "yarn ci && cat ./coverage/lcov.info | coveralls",
+    "ci:cov:win32": "yarn coverage --ci -i && type coverage\\lcov.info | coveralls"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",
@@ -19,6 +22,7 @@
     "@babel/preset-react": "^7.0.0-beta.42",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^22.4.3",
+    "coveralls": "^3.0.0",
     "flow-bin": "^0.66.0",
     "jest": "^22.4.3",
     "react": "^16.3.0",

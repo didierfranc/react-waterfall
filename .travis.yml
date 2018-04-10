@@ -9,4 +9,6 @@ cache:
     - "node_modules"
 
 script:
-  - yarn test --ci -i
+  - yarn run ci
+
+# to use coveralls change script to "ci:cov"

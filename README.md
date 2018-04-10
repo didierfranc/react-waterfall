@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/didierfranc/react-waterfall/badge.svg)](https://coveralls.io/github/didierfranc/react-waterfall)
+
 # react-waterfall
 
 ## How to use it ?

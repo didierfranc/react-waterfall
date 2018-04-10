@@ -57,9 +57,10 @@ export const { Provider, connect } = initStore(store, !prod && devtools())
 
 You can explore types [here](dist/react-waterfall.js.flow)
 
-## Advanced
+## Contributors
 
-Advanced examples are available [here](https://github.com/didierfranc/react-waterfall-example)
+- [@elisherer](https://github.com/elisherer)
+- [@emilioicai](https://github.com/emilioicai)
 
 ## Links
 

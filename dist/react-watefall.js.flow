@@ -4,24 +4,49 @@ declare module 'react-waterfall' {
   declare type Self = {}
   declare type Action = (State) => {}
   declare type Actions = { [string]: Action }
-  declare type Subscriber = (Action, State) => void
+  declare type Subscriber = (Action, State, any) => void
+  declare type Middleware = (String, any) => void
+  declare type MiddlewareFactory = (Config, Self, Actions[]) => Middleware
+  declare type Context = { Provider: React$Component<*>, Consumer: React$Component<*> }
 
-  declare type Store = {
+  declare type Config = {
     initialState: State,
     actions: Actions,
   }
 
-  declare type Middleware = (Store, Self) => String => void
-
-  declare export var initStore: (
-    state: {},
-    middlewares?: [Middleware],
-  ) => {
-    Provider: React$Component<*>,
-    Consumer: React$Component<*>,
-    connect: ([string]) => (React$Component<*>) => React$Component<*>,
-    actions: Actions,
-    getState: () => State,
-    subscribe: Subscriber,
+  declare type ProviderProp = {
+    store: Store,
+    children: Function,
   }
+
+  declare type ConsumerProp = {
+    context: Context,
+    mapStateToProps: Function,
+    children: Function
+  }
+
+  declare export class Consumer extends React$Component<ConsumerProp> {
+  }
+
+  declare export class Provider extends React$Component<ProviderProp> {
+    value: { actions: Actions[], state: any }
+  }
+
+  declare class Store {
+    constructor(store: Config, middlewares?: MiddlewareFactory[]): Store
+    context: Context
+    initialState: any
+    factories: ?MiddlewareFactory[]
+    middlewares: ?Middleware[]
+    provider: ?Provider
+    subscribers: ?Subscriber[]
+    actions: Actions
+    getState: () => any
+    attach: (Provider) => void
+    subscribe: (Subscriber) => void
+    setState: (Action, any) => void
+  }
+
+  declare export var connect: (mapStateToProps: Function) => (React$Component<*>) => React$Component<*>
+  declare export var initStore: (options: Config, middlewares?: MiddlewareFactory[]) => Store
 }

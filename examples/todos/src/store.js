@@ -1,7 +1,7 @@
 import { initStore } from 'react-waterfall'
 let nextTodoId = 2
 
-const store = {
+const store = initStore({
   initialState: {
     todos: [
       {
@@ -34,7 +34,7 @@ const store = {
       visibilityFilter,
     }),
   },
-}
+})
 
 export const VisibilityFilters = {
   SHOW_ALL: 'SHOW_ALL',
@@ -42,11 +42,4 @@ export const VisibilityFilters = {
   SHOW_ACTIVE: 'SHOW_ACTIVE',
 }
 
-export const {
-  Provider,
-  Consumer,
-  actions,
-  getState,
-  connect,
-  subscribe,
-} = initStore(store)
+export default store

@@ -1,5 +1,5 @@
 import React from 'react';
-import { initStore } from '../index'
+import { initStore, Provider, connect } from '../index'
 import renderer from 'react-test-renderer';
 
 const mockStore = {
@@ -17,96 +17,97 @@ const TestCount = ({ beforeRender, ...rest }) => {
 TestCount.displayName = 'TestCount'
 
 describe('initStore', () => {
-  test('should return expected structure', () => {
-    const storeContext = initStore(mockStore)
+  let storeContext
 
-    expect(storeContext.Provider).toBeDefined()
-    expect(storeContext.Consumer).toBeDefined()
+  beforeEach(() => {
+    storeContext = initStore(mockStore)
+  })
+
+  test('should return expected structure', () => {
+    expect(storeContext.config).toBeDefined()
+    expect(storeContext.context).toBeDefined()
+    expect(storeContext.initialState).toBeDefined()
     expect(storeContext.actions).toBeDefined()
+    expect(storeContext.provider).toBeNull()
+    expect(storeContext.subscribers).toHaveLength(0)
+    expect(storeContext.factories).toHaveLength(0)
+    expect(storeContext.middlewares).toHaveLength(0)
     expect(storeContext.getState).toBeDefined()
-    expect(storeContext.connect).toBeDefined()
+    expect(storeContext.attach).toBeDefined()
     expect(storeContext.subscribe).toBeDefined()
   })
 
   test('should fail an action if provider not initialized', () => {
-    const { connect, actions } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     jest.spyOn(global.console, 'error')
-    actions.increment()
+    storeContext.actions.increment()
     expect(console.error).toBeCalled()
   })
 
   test('should fail getState if provider not initialized', () => {
-    const { connect, getState } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     jest.spyOn(global.console, 'error')
-    getState()
+    storeContext.getState()
     expect(console.error).toBeCalled()
   })
 
   test('should add a displayName to the connected component (component with displayName)', () => {
-    const { connect } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     expect(Count.displayName).toBe('Connect(TestCount)')
   })
 
   test('should add a displayName to the connected component (named function)', () => {
-    const { connect } = initStore(mockStore)
     const funcWithName = () => null
     const Count = connect(state => state)(funcWithName)
     expect(Count.displayName).toBe('Connect(funcWithName)')
   })
 
   test('should add a displayName to the connected component (anonymous function)', () => {
-    const { connect } = initStore(mockStore)
     const Count = connect(state => state)(() => null)
     expect(Count.displayName).toBe('Connect(Unknown)')
   })
 
   test('should change value on action', () => {
-    const { connect, Provider, actions, getState } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     const component = renderer.create(
-      <Provider>
+      <Provider store={storeContext}>
         <Count />
       </Provider>
     );
-    expect(getState().count).toBe(0)
-    actions.increment()
+    expect(storeContext.getState().count).toBe(0)
+    storeContext.actions.increment()
     component.toJSON() // invoke render
-    expect(getState().count).toBe(1)
+    expect(storeContext.getState().count).toBe(1)
   })
 
   test('should call subscribers on state change', () => {
-    const { connect, Provider, actions, subscribe } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     const subscriber = jest.fn()
-    subscribe(subscriber)
+    storeContext.subscribe(subscriber)
     const component = renderer.create(
-      <Provider>
+      <Provider store={storeContext}>
         <Count />
       </Provider>
     );
-    actions.increment()
+    storeContext.actions.increment()
     component.toJSON() // invoke render
     expect(subscriber).toHaveBeenCalledTimes(1)
   })
 
   test('should allow action to return a promise', () => {
-    const { connect, Provider, actions, subscribe } = initStore(mockStore)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     const subscriber = (action, state) => {
       expect(action).toEqual('promised')
       expect(state).toEqual({ count: 1 })
     }
-    subscribe(subscriber)
+    storeContext.subscribe(subscriber)
     const component = renderer.create(
-      <Provider>
+      <Provider store={storeContext}>
         <Count />
       </Provider>
     )
     expect.assertions(2); // async
-    actions.promised()
+    storeContext.actions.promised()
     component.toJSON() // invoke render
   })
 
@@ -117,15 +118,15 @@ describe('initStore', () => {
       expect(self.state.count).toBe(0)
       return middleware
     })
-    const { connect, Provider, actions } = initStore(mockStore, middlewareWrapper)
+    storeContext = initStore(mockStore, middlewareWrapper)
     const Count = connect(state => ({ count: state.count }))(TestCount)
     const component = renderer.create(
-      <Provider>
+      <Provider store={storeContext}>
         <Count />
       </Provider>
     );
     expect.assertions(3); // async
-    actions.increment()
+    storeContext.actions.increment()
     component.toJSON() // invoke render
   })
 

@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/react-waterfall.svg)](https://badge.fury.io/js/react-waterfall) [![Build Status](https://api.travis-ci.org/didierfranc/react-waterfall.svg?branch=master)](https://travis-ci.org/didierfranc/react-waterfall) [![Coverage Status](https://coveralls.io/repos/github/didierfranc/react-waterfall/badge.svg)](https://coveralls.io/github/didierfranc/react-waterfall)
+
 # react-waterfall
 
 ## How to use it ?
@@ -55,11 +57,12 @@ export const { Provider, connect } = initStore(store, ...middleware);
 
 ## Types
 
-You can explore types [here](dist/react-waterfall.js.flow)
+You can explore types [here](https://github.com/didierfranc/react-waterfall/blob/master/dist/react-watefall.js.flow)
 
-## Advanced
+## Contributors
 
-Advanced examples are available [here](https://github.com/didierfranc/react-waterfall-example)
+- [@elisherer](https://github.com/elisherer)
+- [@emilioicai](https://github.com/emilioicai)
 
 ## Links
 

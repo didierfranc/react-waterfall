@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/didierfranc/react-waterfall/badge.svg)](https://coveralls.io/github/didierfranc/react-waterfall)
+[![npm version](https://badge.fury.io/js/react-waterfall.svg)](https://badge.fury.io/js/react-waterfall) [![Build Status](https://api.travis-ci.org/didierfranc/react-waterfall.svg?branch=master)](https://travis-ci.org/didierfranc/react-waterfall) [![Coverage Status](https://coveralls.io/repos/github/didierfranc/react-waterfall/badge.svg)](https://coveralls.io/github/didierfranc/react-waterfall)
 
 # react-waterfall
 

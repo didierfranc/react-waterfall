@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, PureComponent, createContext, forwardRef } from 'react'
+import React, { Component, PureComponent, createContext } from 'react'
 
 const err = () => console.error('Provider is not initialized yet')
 
@@ -64,10 +64,10 @@ export const initStore: Function = (store, ...middlewares) => {
   }
 
   const connect = mapStateToProps => WrappedComponent => {
-    const ConnectComponent = forwardRef((props, ref) =>
+    const ConnectComponent = (props) =>
       <Consumer mapStateToProps={mapStateToProps}>
-        {injectedProps => <WrappedComponent {...props} {...injectedProps} ref={ref}/>}
-      </Consumer>)
+        {injectedProps => <WrappedComponent {...props} {...injectedProps} />}
+      </Consumer>
     ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`
     return ConnectComponent
   }

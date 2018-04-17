@@ -1,6 +1,6 @@
 {
   "name": "react-waterfall",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "main": "dist/react-waterfall.js",
   "author": "Didier Franc <didierfranc@me.com>",
   "license": "MIT",
@@ -12,7 +12,8 @@
     "coverage": "jest --coverage",
     "ci": "yarn coverage --ci -i",
     "ci:cov": "yarn ci && cat ./coverage/lcov.info | coveralls",
-    "ci:cov:win32": "yarn coverage --ci -i && type coverage\\lcov.info | coveralls"
+    "ci:cov:win32":
+      "yarn coverage --ci -i && type coverage\\lcov.info | coveralls"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",

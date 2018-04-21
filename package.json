@@ -1,6 +1,6 @@
 {
   "name": "react-waterfall",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "main": "dist/react-waterfall.js",
   "author": "Didier Franc <didierfranc@me.com>",
   "license": "MIT",

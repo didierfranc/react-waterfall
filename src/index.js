@@ -47,7 +47,14 @@ export const initStore: Function = (store, ...middlewares) => {
     // We do this so the sCU of Prevent will ignore the children prop
     _children = () => this.props.children
 
-    prevent = ({ state, actions }) => {
+    prevent = (args) => {
+      if (!args.state) {
+        err();
+
+        return null;
+      }
+
+      const { state, actions } = args;
       const { mapStateToProps } = this.props
       return (
         <Prevent {...mapStateToProps(state)} actions={actions} _children={this._children} />

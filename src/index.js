@@ -48,9 +48,9 @@ export const initStore: Function = (store, ...middlewares) => {
     _children = () => this.props.children
 
     prevent = ({ state, actions }) => {
-      const { mapStateToProps } = this.props
+      const { mapStateToProps, children /* exclude children from rest */, ...rest } = this.props
       return (
-        <Prevent {...mapStateToProps(state)} actions={actions} _children={this._children} />
+        <Prevent {...mapStateToProps(state)} {...rest} actions={actions} _children={this._children} />
       )
     }
 
@@ -64,9 +64,9 @@ export const initStore: Function = (store, ...middlewares) => {
   }
 
   const connect = mapStateToProps => WrappedComponent => {
-    const ConnectComponent = (props) =>
-      <Consumer mapStateToProps={mapStateToProps}>
-        {injectedProps => <WrappedComponent {...props} {...injectedProps} />}
+    const ConnectComponent = props =>
+      <Consumer mapStateToProps={mapStateToProps} {...props}>
+        {injectedProps => <WrappedComponent {...injectedProps} />}
       </Consumer>
     ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`
     return ConnectComponent

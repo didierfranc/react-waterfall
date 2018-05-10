@@ -26,6 +26,7 @@ describe('initStore', () => {
     expect(storeContext.getState).toBeDefined()
     expect(storeContext.connect).toBeDefined()
     expect(storeContext.subscribe).toBeDefined()
+    expect(storeContext.unsubscribe).toBeDefined()
   })
 
   test('should fail an action if provider not initialized', () => {
@@ -90,6 +91,22 @@ describe('initStore', () => {
     actions.increment()
     component.toJSON() // invoke render
     expect(subscriber).toHaveBeenCalledTimes(1)
+  })
+
+  test('should remove subscribers on unsubscribe', () => {
+    const { connect, Provider, actions, subscribe, unsubscribe } = initStore(mockStore)
+    const Count = connect(state => ({ count: state.count }))(TestCount)
+    const subscriber = jest.fn()
+    subscribe(subscriber)
+    const component = renderer.create(
+      <Provider>
+        <Count />
+      </Provider>
+    );
+    unsubscribe(subscriber)
+    actions.increment()
+    component.toJSON() // invoke render
+    expect(subscriber).toHaveBeenCalledTimes(0)
   })
 
   test('should allow action to return a promise', () => {

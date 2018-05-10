@@ -25,6 +25,10 @@ export const initStore: Function = (store, ...middlewares) => {
     subscriptions = [...subscriptions, fn]
   }
 
+  const unsubscribe = fn => {
+    subscriptions = subscriptions.filter(subscriber => subscriber !== fn)
+  }
+
   const actions = Object.keys(store.actions).reduce(
     (r, v) => ({
       ...r,
@@ -104,5 +108,6 @@ export const initStore: Function = (store, ...middlewares) => {
     getState,
     connect,
     subscribe,
+    unsubscribe,
   }
 }

@@ -1,29 +1,27 @@
-declare module 'react-waterfall' {
+import { ComponentType } from 'react';
 
-  import React from 'react'
-
-  declare type State = any
-  declare type Self = any
-  declare type Action = (state: State) => any
-  declare type Actions = { [key: string]: Action }
-  declare type Subscriber = (action: Action, state: State) => void
-
-  declare type Store = {
-    initialState: State
-    actions: Actions
+export type Action<T> = (...args: any[]) => void
+export type Actions<T> = {
+  [K: string]: Action<T>
+}
+export type Store<T, A> = {
+  initialState: T
+  actions: {
+    [K in keyof A]: (state: T, ...args: any[]) => T | Promise<T>
   }
+}
 
-  declare type Middleware = (store: Store, self: Self) => (action: string) => void
+export type Subscriber<T, A> = (action: keyof A, state: T, ...args: any[]) => void
 
-  declare export const initStore: (
-    state: any,
-    middlewares?: Middleware[],
-  ) => {
-    Provider: React.Component<any>
-    Consumer: React.Component<any>
-    connect: (state: any) => (component: React.Component<any>) => React.Component<any>
-    actions: Actions
-    getState: () => State
-    subscribe: Subscriber
-  }
+export type Middleware<T, A> = (store: Store<T, A>, self: ComponentType<any>) => (action: keyof A, ...args: any[]) => void
+
+export type Connect<T, P = any> = (selector: (state: T) => P) => (baseComponet: ComponentType<any>) => ComponentType<any>
+
+export function initStore<T, A extends Actions<T>>(store: Store<T, A>, ...middlewares: Middleware<T, A>[]): {
+  Provider: ComponentType<any>
+  Consumer: ComponentType<any>
+  connect: Connect<T>
+  actions: A
+  getState: () => T
+  subscribe: (subscruber: Subscriber<T, A>) => void
 }

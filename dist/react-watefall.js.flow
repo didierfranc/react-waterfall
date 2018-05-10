@@ -1,25 +1,25 @@
 // @flow
 declare module 'react-waterfall' {
-  declare type State = {}
-  declare type Self = {}
-  declare type Action = (State) => {}
+  declare type State = any
+  declare type Self = any
+  declare type Action = (State) => any
   declare type Actions = { [string]: Action }
-  declare type Subscriber = (Action, State) => void
+  declare type Subscriber = (Action: Action, State: State) => void
 
   declare type Store = {
     initialState: State,
     actions: Actions,
   }
 
-  declare type Middleware = (Store, Self) => String => void
+  declare type Middleware = (Store: Store, Self: Self) => String => void
 
   declare export var initStore: (
-    state: {},
+    state: any,
     middlewares?: [Middleware],
   ) => {
-    Provider: React$Component<*>,
-    Consumer: React$Component<*>,
-    connect: ([string]) => (React$Component<*>) => React$Component<*>,
+    Provider: React$ComponentType<any>,
+    Consumer: React$ComponentType<any>,
+    connect: (state: any) => (React$ComponentType<any>) => React$ComponentType<any>,
     actions: Actions,
     getState: () => State,
     subscribe: Subscriber,

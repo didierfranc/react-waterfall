@@ -7,7 +7,7 @@ export type Actions<T> = {
 export type Store<T, A> = {
   initialState: T
   actions: {
-    [K in keyof A]: (state: T, ...args: any[]) => T | Promise<T>
+    [K in keyof A]: (state: T, ...args: any[]) => Partial<T> | Promise<Partial<T>>
   }
 }
 

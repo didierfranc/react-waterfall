@@ -5,8 +5,8 @@ const err = () => console.error('Provider is not initialized yet')
 
 class Prevent extends PureComponent<*> {
   render() {
-    const { _children, ...rest } = this.props;
-    return _children()(rest)
+    const { _render, ...rest } = this.props;
+    return _render(rest)
   }
 }
 
@@ -48,13 +48,15 @@ export const initStore: Function = (store, ...middlewares) => {
 
   class Consumer extends Component {
 
-    // We do this so the sCU of Prevent will ignore the children prop
-    _children = () => this.props.children
+    _render = (props) => {
+      const { component: Comp } = this.props
+      return <Comp {...props} />
+    }
 
     prevent = ({ state, actions }) => {
-      const { mapStateToProps, children /* exclude children from rest */, ...rest } = this.props
+      const { component /* exclude from rest */, mapStateToProps, ...rest } = this.props
       return (
-        <Prevent {...mapStateToProps(state)} {...rest} actions={actions} _children={this._children} />
+        <Prevent {...mapStateToProps(state, rest)} {...rest} actions={actions} _render={this._render} />
       )
     }
 
@@ -68,10 +70,7 @@ export const initStore: Function = (store, ...middlewares) => {
   }
 
   const connect = mapStateToProps => WrappedComponent => {
-    const ConnectComponent = props =>
-      <Consumer mapStateToProps={mapStateToProps} {...props}>
-        {injectedProps => <WrappedComponent {...injectedProps} />}
-      </Consumer>
+    const ConnectComponent = props => <Consumer mapStateToProps={mapStateToProps} component={WrappedComponent} {...props} />
     ConnectComponent.displayName = `Connect(${WrappedComponent.displayName || WrappedComponent.name || 'Unknown'})`
     return ConnectComponent
   }

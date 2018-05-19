@@ -1,0 +1,56 @@
+{
+  "name": "react-waterfall",
+  "version": "4.0.0",
+  "description": "",
+  "main": "dist/react-waterfall.js",
+  "scripts": {
+    "build": "rollup -c -m && yarn gen-flow",
+    "gen-flow": "cp src/types.js dist/react-waterfall.js.flow",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/didierfranc/react-waterfall.git"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "context",
+    "store"
+  ],
+  "author": "Didier Franc <didierfranc@me.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/didierfranc/react-waterfall/issues"
+  },
+  "homepage": "https://github.com/didierfranc/react-waterfall#readme",
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.47",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.47",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.47",
+    "@babel/preset-env": "^7.0.0-beta.47",
+    "@babel/preset-flow": "^7.0.0-beta.47",
+    "@babel/preset-react": "^7.0.0-beta.47",
+    "babel-core": "^7.0.0-0",
+    "babel-eslint": "^8.2.3",
+    "babel-jest": "^22.4.4",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.8.2",
+    "flow-bin": "^0.72.0",
+    "jest": "^22.4.4",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-test-renderer": "^16.3.2",
+    "regenerator-runtime": "^0.11.1",
+    "rollup": "^0.59.1",
+    "rollup-plugin-babel": "^4.0.0-beta.4",
+    "rollup-plugin-uglify": "^3.0.0"
+  },
+  "peerDependencies": {
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
+  }
+}

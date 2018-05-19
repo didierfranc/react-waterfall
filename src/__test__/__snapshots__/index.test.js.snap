@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render provider with its children 1`] = `
+<h1>
+  Children
+</h1>
+`;

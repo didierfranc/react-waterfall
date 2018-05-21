@@ -6,6 +6,7 @@ import { createContext } from 'react'
 import createProvider from './Components/Provider'
 import createConnect from './helpers/connect'
 import Subscriptions from './helpers/subscriptions'
+import devtools from './helpers/devtools'
 
 import type {
   CreateStore,
@@ -14,6 +15,13 @@ import type {
   CustomSetState,
   Context,
 } from './types'
+
+const defaultMiddlewares =
+  process.env.NODE_ENV === 'development' &&
+  typeof window !== 'undefined' &&
+  window.devToolsExtension
+    ? [devtools]
+    : []
 
 const createStore: CreateStore = (
   { initialState, actions: actionsCreators = {} },
@@ -25,7 +33,7 @@ const createStore: CreateStore = (
   const { getSubscriptions, subscribe, unsubscribe } = new Subscriptions()
 
   const setProvider: SetProvider = self => {
-    const initializedMiddlewares = middlewares.map(middleware =>
+    const initializedMiddlewares = [...middlewares, ...defaultMiddlewares].map(middleware =>
       middleware({ initialState, actionsCreators }, self, actions))
 
     provider = {
@@ -35,11 +43,11 @@ const createStore: CreateStore = (
     }
   }
 
-  const setState: CustomSetState = (action, state, args) => {
+  const setState: CustomSetState = (action, state, ...args) => {
     const subscriptions = getSubscriptions()
-    subscriptions.forEach(fn => fn(action, state, args))
+    subscriptions.forEach(fn => fn(action, state, ...args))
     provider.setState(state, () =>
-      provider.initializedMiddlewares.forEach(m => m(action, args)))
+      provider.initializedMiddlewares.forEach(m => m(action, ...args)))
   }
 
   const actions = Object.keys(actionsCreators).reduce(
@@ -51,8 +59,8 @@ const createStore: CreateStore = (
           return
         }
         const result = actionsCreators[v](provider.getState(), ...args)
-        if (result.then) result.then(res => setState(v, res, args))
-        else setState(v, result, args)
+        if (result.then) result.then(res => setState(v, res, ...args))
+        else setState(v, result, ...args)
       },
     }),
     {},

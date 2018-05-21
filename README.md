@@ -35,18 +35,7 @@ const App = () => (
 
 ## Devtools
 
-It's possible to use `redux-devtools` with `react-waterfall` thanks to this [middleware](https://github.com/elisherer/react-waterfall-redux-devtools-middleware)
-
-**store.js**
-```js
-import createStore from 'react-waterfall'
-import reduxDevTools from 'react-waterfall-redux-devtools-middleware'
-
-const config = ...
-const middlewares = __DEV__ ? [reduxDevTools] : []
-
-export const { Provider, connect, actions } = createStore(config, middlewares)
-```
+During development `redux-devtools` are automatically enabled. Install the [extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd).
 
 ## Contributors
 

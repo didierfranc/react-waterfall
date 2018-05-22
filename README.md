@@ -10,7 +10,7 @@ import createStore from 'react-waterfall'
 
 const config = {
   initialState: { count: 0 },
-  actions: {
+  actionsCreators: {
     increment: ({ count }) => ({ count: count + 1 }),
   },
 }

@@ -24,7 +24,7 @@ const defaultMiddlewares =
     : []
 
 const createStore: CreateStore = (
-  { initialState, actions: actionsCreators = {} },
+  { initialState, actionsCreators = {} },
   middlewares = [],
 ) => {
   let provider: ProviderType

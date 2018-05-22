@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+input {
+  margin: 20px
+}
+
+button:nth-child(3) {
+  margin-left: 20px
+}

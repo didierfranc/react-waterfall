@@ -15,7 +15,7 @@ type Actions = { [string]: Action }
 
 type Config = {
   initialState: State,
-  actions: Actions,
+  actionsCreators: Actions,
 }
 
 type Middleware = (

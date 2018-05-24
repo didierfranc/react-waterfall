@@ -1,5 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`actions triggered and state updated 1`] = `"0"`;
+
+exports[`actions triggered and state updated 2`] = `"1"`;
+
 exports[`render provider with its children 1`] = `
 <h1>
   Children

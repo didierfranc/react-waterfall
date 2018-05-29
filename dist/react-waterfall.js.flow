@@ -3,7 +3,11 @@
 
 export type State = { [string]: any }
 type SetState = (state: State, callback: () => void) => void
-export type CustomSetState = (action: string, state: State, args: {}) => void
+export type CustomSetState = (
+  action: string,
+  state: State,
+  args: {},
+) => Promise<void>
 
 type Self = {
   state: State,

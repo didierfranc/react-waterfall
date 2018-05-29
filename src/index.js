@@ -43,12 +43,15 @@ const createStore: CreateStore = (
     }
   }
 
-  const setState: CustomSetState = (action, state, ...args) => {
-    const subscriptions = getSubscriptions()
-    subscriptions.forEach(fn => fn(action, state, ...args))
-    provider.setState(state, () =>
-      provider.initializedMiddlewares.forEach(m => m(action, ...args)))
-  }
+  const setState: CustomSetState = (action, state, ...args) =>
+    new Promise(resolve => {
+      const subscriptions = getSubscriptions()
+      subscriptions.forEach(fn => fn(action, state, ...args))
+      provider.setState(state, () => {
+        provider.initializedMiddlewares.forEach(m => m(action, ...args))
+        resolve()
+      })
+    })
 
   const actions = Object.keys(actionsCreators).reduce(
     (r, v) => ({
@@ -59,8 +62,10 @@ const createStore: CreateStore = (
           return
         }
         const result = actionsCreators[v](provider.getState(), ...args)
-        if (result.then) result.then(res => setState(v, res, ...args))
-        else setState(v, result, ...args)
+
+        return result.then
+          ? result.then(res => setState(v, res, ...args))
+          : setState(v, result, ...args)
       },
     }),
     {},

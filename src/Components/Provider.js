@@ -5,7 +5,7 @@ import React, { Component } from 'react'
 
 import type { CreateProvider, State } from '../types'
 
-type Props = { children: React$Node }
+type Props = { children: React$Node, initialState: {} }
 
 const EnhancedProvider: CreateProvider = (
   setProvider,
@@ -13,9 +13,9 @@ const EnhancedProvider: CreateProvider = (
   initialState,
 ) =>
   class EnhancedProvider extends Component<Props, State> {
-    constructor() {
+    constructor(props) {
       super()
-      this.state = initialState
+      this.state = props.initialState || initialState
       setProvider(this)
     }
 

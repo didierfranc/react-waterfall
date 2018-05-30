@@ -4,7 +4,7 @@ exports[`actions triggered and state updated 1`] = `"0"`;
 
 exports[`actions triggered and state updated 2`] = `"1"`;
 
-exports[`consecutive actions update state accordingly 1`] = `"1"`;
+exports[`consecutive actions update state accordingly 1`] = `"2"`;
 
 exports[`render provider with its children 1`] = `
 <h1>

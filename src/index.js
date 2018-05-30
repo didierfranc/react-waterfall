@@ -43,31 +43,35 @@ const createStore: CreateStore = (
     }
   }
 
-  const setState: CustomSetState = (action, state, ...args) =>
+  const setState: CustomSetState = (action, ...args) =>
     new Promise(resolve => {
-      const subscriptions = getSubscriptions()
-      subscriptions.forEach(fn => fn(action, state, ...args))
-      provider.setState(state, () => {
-        provider.initializedMiddlewares.forEach(m => m(action, ...args))
-        resolve()
-      })
+      provider.setState(
+        // functional setState
+        prevState => actionsCreators[action](prevState, ...args),
+        // setState callback, update middleware, update subscribers
+        () => {
+          const state = provider.getState()
+          provider.initializedMiddlewares.forEach(m => m(action, state, ...args))
+
+          const subscriptions = getSubscriptions()
+          subscriptions.forEach(fn => fn(action, state, ...args))
+
+          resolve()
+        }
+      )
     })
 
   const actions = Object.keys(actionsCreators).reduce(
-    (r, v) => ({
-      ...r,
-      [v]: (...args) => {
+    (accumulator, actionName) => {
+      accumulator[actionName] = (...args) => {
         if (!provider) {
           console.error('<Provider /> is not initialized yet')
           return
         }
-        const result = actionsCreators[v](provider.getState(), ...args)
-
-        return result.then
-          ? result.then(res => setState(v, res, ...args))
-          : setState(v, result, ...args)
-      },
-    }),
+        return setState(actionName, ...args)
+      }
+      return accumulator
+    },
     {},
   )
 

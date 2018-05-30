@@ -89,3 +89,26 @@ test('async actions', async () => {
   const instance = tree.root.findByType(Stars).children[0]
   expect(typeof instance.props.stars).toBe('number')
 })
+
+test('consecutive actions update state accordingly', () => {
+  const { Provider, connect, actions } = store
+
+  class PlusTwoOnMountCount extends React.Component {
+    componentDidMount() {
+      actions.increment()
+      actions.increment()
+    }
+    render() {
+      return this.props.count;
+    }
+  }
+  const Count = connect(({ count }) => ({ count }))(PlusTwoOnMountCount)
+
+  const App = () => (
+    <Provider>
+      <Count />
+    </Provider>
+  )
+  const tree = renderer.create(<App />)
+  expect(tree.toJSON()).toMatchSnapshot()
+})

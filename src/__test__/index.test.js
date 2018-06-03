@@ -1,18 +1,28 @@
 /* global store */
 import React from 'react'
 import renderer from 'react-test-renderer'
+import fetch from 'node-fetch'
 
 import createStore from '../'
 
-global.console = { error: jest.fn() }
+global.console = { ...console, error: jest.fn() }
+global.fetch = fetch
+
+const REPO = 'https://api.github.com/repos/didierfranc/react-waterfall'
 
 beforeEach(() => {
   const config = {
     initialState: {
       count: 0,
+      stars: null,
     },
     actionsCreators: {
       increment: ({ count }) => ({ count: count + 1 }),
+      getStars: async () => {
+        const { stargazers_count: stars } = await fetch(REPO).then(r =>
+          r.json())
+        return { stars }
+      },
     },
   }
 
@@ -60,4 +70,22 @@ test('actions triggered and state updated', () => {
 
   actions.increment()
   expect(tree.toJSON()).toMatchSnapshot()
+})
+
+test('async actions', async () => {
+  const { Provider, connect, actions } = store
+
+  const Stars = connect(({ stars }) => ({ stars }))(({ stars }) => stars)
+
+  const App = () => (
+    <Provider>
+      <Stars />
+    </Provider>
+  )
+
+  const tree = renderer.create(<App />)
+  await actions.getStars()
+
+  const instance = tree.root.findByType(Stars).children[0]
+  expect(typeof instance.props.stars).toBe('number')
 })

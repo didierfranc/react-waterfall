@@ -2,12 +2,15 @@
 /* eslint-disable no-undef */
 
 export type State = { [string]: any }
+
 type SetState = (state: State, callback: () => void) => void
-export type CustomSetState = (
-  action: string,
-  state: State,
-  args: {},
-) => Promise<void>
+export type ActionObject = {
+  type: string,
+  args: [],
+  resolve: function,
+  reject: function
+}
+type Dispatch = (ActionObject) => Promise<void>
 
 type Self = {
   state: State,
@@ -16,27 +19,24 @@ type Self = {
 
 type Action = (State, {}) => any
 type Actions = { [string]: Action }
+type BoundActions = ({}) => any
 
 type Config = {
   initialState: State,
   actionsCreators: Actions,
 }
 
-type Middleware = (
-  {
-    initialState: State,
-    actionsCreators: Actions,
-  },
-  self: Self,
-  actions: Actions,
-) => (action: string, arg: string) => void
-
-type InitializedMiddlewares = (action: string, args: any) => void
+export type Middleware =
+  (provider: ProviderType, self: Self) =>
+    (next: ActionObject => any) =>
+    (action: ActionObject) => void
 
 export type ProviderType = {
   getState: () => State,
-  setState: SetState,
-  initializedMiddlewares: InitializedMiddlewares[],
+  dispatch: Dispatch,
+  actions: { [string]: BoundActions },
+  actionsCreators: Actions,
+  broadcast: ActionObject => any
 }
 
 type Consumer = React$ComponentType<{

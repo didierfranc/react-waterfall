@@ -3,7 +3,12 @@
   "version": "4.0.0-beta.2",
   "description": "",
   "main": "index.js",
-  "files": ["index.js", "package.json", "README.md", "dist/"],
+  "files": [
+    "index.js",
+    "package.json",
+    "README.md",
+    "dist/"
+  ],
   "scripts": {
     "build": "rollup -c -m && yarn gen-flow",
     "gen-flow": "cp src/types.js dist/react-waterfall.js.flow",

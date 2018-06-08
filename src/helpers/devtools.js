@@ -1,6 +1,6 @@
 let id = 0
 
-export default ({ initialState }, self) => {
+export default ({ initialState, getState }, self) => {
   const reduxDevTools = window.devToolsExtension
 
   const instanceID = id
@@ -37,7 +37,10 @@ export default ({ initialState }, self) => {
     }
   })
 
-  return (action, ...arg) => {
-    devTools.send({ type: action, ...arg }, self.state, {}, instanceID)
+  return next => action => {
+
+    devTools.send(action, getState(), {}, instanceID)
+
+    next(action)
   }
 }

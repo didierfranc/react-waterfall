@@ -1,14 +1,12 @@
 /* global store */
 import React from 'react'
 import renderer from 'react-test-renderer'
-import fetch from 'node-fetch'
 
 import createStore from '../'
 
 global.console = { ...console, error: jest.fn() }
-global.fetch = fetch
 
-const REPO = 'https://api.github.com/repos/didierfranc/react-waterfall'
+const mockFetch = () => new Promise(resolve => setTimeout(() => resolve({ stars: 1e10 })), 100);
 
 beforeEach(() => {
   const config = {
@@ -19,9 +17,7 @@ beforeEach(() => {
     actionsCreators: {
       increment: ({ count }) => ({ count: count + 1 }),
       getStars: async () => {
-        const { stargazers_count: stars } = await fetch(REPO).then(r =>
-          r.json())
-        return { stars }
+        return await mockFetch()
       },
     },
   }

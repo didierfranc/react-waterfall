@@ -61,7 +61,7 @@ const createStore: CreateStore = (
           console.error('<Provider /> is not initialized yet')
           return
         }
-        const result = actionsCreators[v](provider.getState(), ...args)
+        const result = actionsCreators[v](provider.getState(), actions, ...args)
 
         return result.then
           ? result.then(res => setState(v, res, ...args))

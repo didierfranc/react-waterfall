@@ -37,21 +37,24 @@ const createStore: CreateStore = (
       middleware({ initialState, actionsCreators }, self, actions))
 
     provider = {
-      getState: () => self.state,
       setState: (state, callback) => self.setState(state, callback),
       initializedMiddlewares,
     }
   }
 
-  const setState: CustomSetState = (action, state, ...args) =>
-    new Promise(resolve => {
+  let state = initialState
+
+  const setState: CustomSetState = (action, result, ...args) => {
+    state = { ...state, ...result }
+    return new Promise(resolve => {
       const subscriptions = getSubscriptions()
-      subscriptions.forEach(fn => fn(action, state, ...args))
+      subscriptions.forEach(fn => fn(action, result, ...args))
       provider.setState(state, () => {
         provider.initializedMiddlewares.forEach(m => m(action, ...args))
         resolve()
       })
     })
+  }
 
   const actions = Object.keys(actionsCreators).reduce(
     (r, v) => ({
@@ -61,10 +64,11 @@ const createStore: CreateStore = (
           console.error('<Provider /> is not initialized yet')
           return
         }
-        const result = actionsCreators[v](provider.getState(), actions, ...args)
+
+        const result = actionsCreators[v](state, actions, ...args)
 
         return result.then
-          ? result.then(res => setState(v, res, ...args))
+          ? result.then(result => setState(v, result, ...args))
           : setState(v, result, ...args)
       },
     }),

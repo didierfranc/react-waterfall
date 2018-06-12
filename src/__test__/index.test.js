@@ -1,14 +1,12 @@
 /* global store */
-import React from 'react'
+import React, { Component } from 'react'
 import renderer from 'react-test-renderer'
-import fetch from 'node-fetch'
 
 import createStore from '../'
 
 global.console = { ...console, error: jest.fn() }
-global.fetch = fetch
 
-const REPO = 'https://api.github.com/repos/didierfranc/react-waterfall'
+const fakeFetch = () => new Promise(resolve => resolve({ stars: 10000 }))
 
 beforeEach(() => {
   const config = {
@@ -19,8 +17,7 @@ beforeEach(() => {
     actionsCreators: {
       increment: ({ count }) => ({ count: count + 1 }),
       getStars: async () => {
-        const { stargazers_count: stars } = await fetch(REPO).then(r =>
-          r.json())
+        const { stars } = await fakeFetch()
         return { stars }
       },
     },
@@ -70,6 +67,31 @@ test('actions triggered and state updated', () => {
 
   actions.increment()
   expect(tree.toJSON()).toMatchSnapshot()
+})
+
+test('consecutive actions calls inside didMount', () => {
+  const { Provider, connect, actions } = store
+
+  const Count = connect(({ count }) => ({ count }))(({ count }) => count)
+
+  class App extends Component {
+    componentDidMount() {
+      actions.increment()
+      actions.increment()
+    }
+    render() {
+      return (
+        <Provider>
+          <Count />
+        </Provider>
+      )
+    }
+  }
+
+  const tree = renderer.create(<App />)
+
+  const instance = tree.root.findByType(Count).children[0]
+  expect(instance.props.count).toBe(2)
 })
 
 test('async actions', async () => {

@@ -9,14 +9,15 @@ import Subscriptions from './helpers/subscriptions'
 import devtools from './helpers/devtools'
 
 import type {
+  ActionObject,
   CreateStore,
   ProviderType,
   SetProvider,
-  CustomSetState,
   Context,
+  Middleware,
 } from './types'
 
-const defaultMiddlewares =
+const developmentMiddlewares =
   process.env.NODE_ENV === 'development' &&
   typeof window !== 'undefined' &&
   window.devToolsExtension
@@ -25,51 +26,79 @@ const defaultMiddlewares =
 
 const createStore: CreateStore = (
   { initialState, actionsCreators = {} },
-  middlewares = [],
+  middlewares : Middleware[] = [],
 ) => {
   let provider: ProviderType
   const context: Context = createContext()
 
   const { getSubscriptions, subscribe, unsubscribe } = new Subscriptions()
 
-  const setProvider: SetProvider = self => {
-    const initializedMiddlewares = [...middlewares, ...defaultMiddlewares].map(middleware =>
-      middleware({ initialState, actionsCreators }, self, actions))
-
-    provider = {
-      getState: () => self.state,
-      setState: (state, callback) => self.setState(state, callback),
-      initializedMiddlewares,
-    }
+  let actions;
+  
+  // the last middleware in the pipeline that:
+  // 1. sets the state
+  // 2. broadcasts the change to the subscribers
+  const setStateMiddleware : Middleware = ({ broadcast, actionsCreators }, self) => (/*next*/) => (action: ActionObject) => {
+    const { type, args, resolve } = action
+    self.setState(
+      // functional setState
+      prevState => actionsCreators[type](prevState, actions,...args),
+      // setState callback, update middleware, update subscribers
+      () => {
+        broadcast(action)
+        resolve()
+      }
+    )
   }
 
-  const setState: CustomSetState = (action, state, ...args) =>
-    new Promise(resolve => {
-      const subscriptions = getSubscriptions()
-      subscriptions.forEach(fn => fn(action, state, ...args))
-      provider.setState(state, () => {
-        provider.initializedMiddlewares.forEach(m => m(action, ...args))
-        resolve()
-      })
-    })
-
-  const actions = Object.keys(actionsCreators).reduce(
-    (r, v) => ({
-      ...r,
-      [v]: (...args) => {
+  // bind action creators to dispatch
+  actions = Object.keys(actionsCreators).reduce(
+    (accumulator, type) => {
+      accumulator[type] = (...args) => {
         if (!provider) {
           console.error('<Provider /> is not initialized yet')
           return
         }
-        const result = actionsCreators[v](provider.getState(), actions, ...args)
-
-        return result.then
-          ? result.then(res => setState(v, res, ...args))
-          : setState(v, result, ...args)
-      },
-    }),
+        return provider.dispatch({ type, args })
+      }
+      return accumulator
+    },
     {},
   )
+
+  const setProvider: SetProvider = self => {
+
+    // bind all middleware
+    const middleware = [
+      ...developmentMiddlewares,
+      ...middlewares,
+      setStateMiddleware
+    ]
+
+    const dispatch = (action : ActionObject) => new Promise((resolve, reject) => {
+      middleware[0]({ ...action, resolve, reject })
+    });
+
+    provider = {
+      getState: () => self.state,
+      dispatch,
+      actions,
+      actionsCreators,
+      broadcast: (action: ActionObject) => {
+        const state = self.state
+        const subscriptions = getSubscriptions()
+        subscriptions.forEach(fn => fn(action.type, state, ...action.args))
+      }
+    }
+
+    for (let i = middleware.length - 1; i >= 0; i--) {
+      // bind with provider and self
+      middleware[i] = middleware[i](provider, self);
+      // bind next with next middleware (the loop goes backwards)
+      middleware[i] = middleware[i](middleware[i+1]);
+    }
+
+  }
 
   const Provider = createProvider(setProvider, context.Provider, initialState)
   const connect = createConnect(context.Consumer)

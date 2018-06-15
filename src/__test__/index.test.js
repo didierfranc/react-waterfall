@@ -1,14 +1,46 @@
 /* global store */
 import React from 'react'
 import renderer from 'react-test-renderer'
-import fetch from 'node-fetch'
 
 import createStore from '../'
 
 global.console = { ...console, error: jest.fn() }
-global.fetch = fetch
 
-const REPO = 'https://api.github.com/repos/didierfranc/react-waterfall'
+const mockFetch = () => new Promise(resolve => {
+  setTimeout(() => {
+    expect(true).toBe(true) // we add this to make sure (in test) that this procedure was called
+    resolve({ stars: 1e10 })
+  }, 100)
+});
+
+// custom api fetch middleware example (input - api request, output - action)
+const customAPIMiddleware = _ => next => async action => {
+  const { type, args } = action
+  if (type === 'fetch') {
+    const what = args[0]
+    switch (what) {
+      case 'stars': {
+        const response = await mockFetch()
+        return next({ ...action, type: 'setStars', args: [response.stars]})
+      }
+    }
+  }
+  next(action)
+}
+
+// thunk (async) middleware example (input - promise creator, output - none)
+const thunkMiddleware = ({ actionsCreators, getState, broadcast }, self) => next => async action => {
+  const { type, args, resolve } = action
+  if (type.endsWith('Async')) {
+    const state = getState()
+    const result = await actionsCreators[type](state, ...args);
+    // note: we intercept and apply the state change right away, so we also need to broadcast and resolve
+    return self.setState(result, () => {
+      broadcast(action)
+      resolve()
+    })}
+  next(action)
+}
 
 beforeEach(() => {
   const config = {
@@ -18,15 +50,21 @@ beforeEach(() => {
     },
     actionsCreators: {
       increment: ({ count }) => ({ count: count + 1 }),
-      getStars: async () => {
-        const { stargazers_count: stars } = await fetch(REPO).then(r =>
-          r.json())
-        return { stars }
+
+      fetch: 0, // usage example: actions.fetch('stars')
+      setStars: (_, stars) => ({ stars }),
+
+      getStarsAsync: async (/*state, ...args*/) => {
+        const result = await mockFetch()
+        return { stars: result.stars }
       },
-    },
+    }
   }
 
-  global.store = createStore(config)
+  global.store = createStore(config, [
+    customAPIMiddleware,
+    thunkMiddleware
+  ])
 })
 
 test('store initialization', () => {
@@ -72,7 +110,8 @@ test('actions triggered and state updated', () => {
   expect(tree.toJSON()).toMatchSnapshot()
 })
 
-test('async actions', async () => {
+test('async actions - thunk example', async () => {  expect.assertions(2)
+
   const { Provider, connect, actions } = store
 
   const Stars = connect(({ stars }) => ({ stars }))(({ stars }) => stars)
@@ -84,8 +123,54 @@ test('async actions', async () => {
   )
 
   const tree = renderer.create(<App />)
-  await actions.getStars()
+
+  await actions.getStarsAsync()
 
   const instance = tree.root.findByType(Stars).children[0]
   expect(typeof instance.props.stars).toBe('number')
+})
+
+
+test('async actions - custom api middleware example', async () => {  expect.assertions(2)
+
+  const { Provider, connect, actions } = store
+
+  const Stars = connect(({ stars }) => ({ stars }))(({ stars }) => stars)
+
+  const App = () => (
+    <Provider>
+      <Stars />
+    </Provider>
+  )
+
+  const tree = renderer.create(<App />)
+
+  await actions.fetch('stars')
+
+  const instance = tree.root.findByType(Stars).children[0]
+  expect(typeof instance.props.stars).toBe('number')
+})
+
+
+test('consecutive actions update state accordingly', () => {
+  const { Provider, connect, actions } = store
+
+  class PlusTwoOnMountCount extends React.Component {
+    componentDidMount() {
+      actions.increment()
+      actions.increment()
+    }
+    render() {
+      return this.props.count;
+    }
+  }
+  const Count = connect(({ count }) => ({ count }))(PlusTwoOnMountCount)
+
+  const App = () => (
+    <Provider>
+      <Count />
+    </Provider>
+  )
+  const tree = renderer.create(<App />)
+  expect(tree.toJSON()).toMatchSnapshot()
 })

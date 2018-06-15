@@ -33,6 +33,8 @@ const createStore: CreateStore = (
 
   const { getSubscriptions, subscribe, unsubscribe } = new Subscriptions()
 
+  let actions;
+  
   // the last middleware in the pipeline that:
   // 1. sets the state
   // 2. broadcasts the change to the subscribers
@@ -40,7 +42,7 @@ const createStore: CreateStore = (
     const { type, args, resolve } = action
     self.setState(
       // functional setState
-      prevState => actionsCreators[type](prevState, ...args),
+      prevState => actionsCreators[type](prevState, actions,...args),
       // setState callback, update middleware, update subscribers
       () => {
         broadcast(action)
@@ -50,7 +52,7 @@ const createStore: CreateStore = (
   }
 
   // bind action creators to dispatch
-  const actions = Object.keys(actionsCreators).reduce(
+  actions = Object.keys(actionsCreators).reduce(
     (accumulator, type) => {
       accumulator[type] = (...args) => {
         if (!provider) {

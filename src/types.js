@@ -34,7 +34,6 @@ type Middleware = (
 type InitializedMiddlewares = (action: string, args: any) => void
 
 export type ProviderType = {
-  getState: () => State,
   setState: SetState,
   initializedMiddlewares: InitializedMiddlewares[],
 }

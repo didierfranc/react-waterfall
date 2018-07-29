@@ -1,6 +1,6 @@
 let id = 0
 
-export default ({ initialState }, self) => {
+export default store => ({ initialState }, self) => {
   const reduxDevTools = window.devToolsExtension
 
   const instanceID = id

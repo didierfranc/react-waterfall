@@ -16,7 +16,7 @@ import type {
   Context,
 } from './types'
 
-const defaultMiddlewares =
+const defaultMiddlewareFactoryBuilders =
   process.env.NODE_ENV === 'development' &&
   typeof window !== 'undefined' &&
   window.devToolsExtension
@@ -25,7 +25,7 @@ const defaultMiddlewares =
 
 const createStore: CreateStore = (
   { initialState, actionsCreators = {} },
-  middlewares = [],
+  middlewareFactoryBuilders = [],
 ) => {
   let provider: ProviderType
   const context: Context = createContext()
@@ -33,8 +33,9 @@ const createStore: CreateStore = (
   const { getSubscriptions, subscribe, unsubscribe } = new Subscriptions()
 
   const setProvider: SetProvider = self => {
-    const initializedMiddlewares = [...middlewares, ...defaultMiddlewares].map(middleware =>
-      middleware({ initialState, actionsCreators }, self, actions))
+    const initializedMiddlewares = middlewareFactories.map(middlewareFactory =>
+      middlewareFactory({ initialState, actionsCreators }, self),
+    )
 
     provider = {
       setState: (state, callback) => self.setState(state, callback),
@@ -78,13 +79,24 @@ const createStore: CreateStore = (
   const Provider = createProvider(setProvider, context.Provider, initialState)
   const connect = createConnect(context.Consumer)
 
-  return {
+  const artifacts = {
     Provider,
     connect,
     actions,
     subscribe,
     unsubscribe,
   }
+
+  const middlewareFactories = [
+    ...middlewareFactoryBuilders,
+    ...defaultMiddlewareFactoryBuilders,
+  ].map(m => {
+    return m({
+      setState,
+      ...artifacts,
+    })
+  })
+  return artifacts
 }
 
 export default createStore

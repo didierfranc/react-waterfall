@@ -34,7 +34,7 @@ const createStore: CreateStore = (
 
   const setProvider: SetProvider = self => {
     const initializedMiddlewares = middlewareFactories.map(middlewareFactory =>
-      middlewareFactory({ initialState, actionsCreators }, self),
+      middlewareFactory({ initialState, actionsCreators }, self, actions),
     )
 
     provider = {

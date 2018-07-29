@@ -9,10 +9,14 @@
     "README.md",
     "dist/"
   ],
+  "watch": {
+    "build": "src/**/*.js"
+  },
   "scripts": {
     "build": "rollup -c -m && yarn gen-flow",
     "gen-flow": "cp src/types.js dist/react-waterfall.js.flow",
-    "test": "jest"
+    "test": "jest",
+    "watch": "npm-watch build"
   },
   "repository": {
     "type": "git",
@@ -47,6 +51,7 @@
     "eslint-plugin-react": "^7.8.2",
     "flow-bin": "^0.72.0",
     "jest": "^22.4.4",
+    "npm-watch": "^0.3.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-test-renderer": "^16.3.2",

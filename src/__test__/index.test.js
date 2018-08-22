@@ -111,3 +111,20 @@ test('async actions', async () => {
   const instance = tree.root.findByType(Stars).children[0]
   expect(typeof instance.props.stars).toBe('number')
 })
+
+test('connect(): allow ownprops from mapStateToProps', async () => {
+  const { Provider, connect, actions } = store
+
+  const Stars = connect(({ stars }, { multiply }) => ({ stars: stars * multiply }))(({ stars }) => stars)
+
+  const App = () => (
+    <Provider>
+      <Stars multiply={2} />
+    </Provider>
+  )
+  const tree = renderer.create(<App />)
+  await actions.getStars()
+
+  const instance = tree.root.findByType(Stars).children[0]
+  expect(instance.props.stars).toBe(20000)
+})

@@ -11,7 +11,7 @@ const connect: CreateConnect = Consumer => mapStateToProps => WrappedComponent =
   const ConnectedComponent = props => (
     <Consumer>
       {state => {
-        const filteredState = mapStateToProps(state || {})
+        const filteredState = mapStateToProps(state || {}, props)
         return (
           <Prevent
             renderComponent={renderComponent}

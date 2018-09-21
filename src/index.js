@@ -10,16 +10,16 @@ import devtools from './helpers/devtools'
 
 import type {
   CreateStore,
-  ProviderType,
-  SetProvider,
-  CustomSetState,
-  Context,
+    ProviderType,
+    SetProvider,
+    CustomSetState,
+    Context,
 } from './types'
 
 const defaultMiddlewares =
   process.env.NODE_ENV === 'development' &&
-  typeof window !== 'undefined' &&
-  window.devToolsExtension
+    typeof window !== 'undefined' &&
+    window.devToolsExtension
     ? [devtools]
     : []
 
@@ -66,6 +66,10 @@ const createStore: CreateStore = (
         }
 
         const result = actionsCreators[v](state, actions, ...args)
+
+        if (typeof result === 'function') {
+          return result(newState => setState(v, newState, ...args));
+        }
 
         return result.then
           ? result.then(result => setState(v, result, ...args))

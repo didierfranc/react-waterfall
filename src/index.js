@@ -84,6 +84,7 @@ const createStore: CreateStore = (
 
   return {
     Provider,
+    Consumer: context.Consumer,
     connect,
     actions,
     subscribe,

@@ -14,6 +14,7 @@ import type {
   SetProvider,
   CustomSetState,
   Context,
+  State
 } from './types'
 
 const defaultMiddlewares =
@@ -77,6 +78,7 @@ const createStore: CreateStore = (
 
   const Provider = createProvider(setProvider, context.Provider, initialState)
   const connect = createConnect(context.Consumer)
+  const getState: State = () => state
 
   return {
     Provider,
@@ -84,6 +86,7 @@ const createStore: CreateStore = (
     actions,
     subscribe,
     unsubscribe,
+    getState
   }
 }
 

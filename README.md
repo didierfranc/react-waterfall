@@ -28,7 +28,7 @@ Count = connect(({ count }) => ({ count }))(Count)
 const App = () => (
   <Provider>
     <Count />
-    <button onClick={actions.increment})>+</button>
+    <button onClick={actions.increment}>+</button>
   </Provider>
 )
 ```

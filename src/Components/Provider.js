@@ -14,7 +14,7 @@ const EnhancedProvider: CreateProvider = (
 ) =>
   class EnhancedProvider extends Component<Props, State> {
     constructor(props) {
-      super()
+      super(props)
       this.state = props.initialState || initialState
       setProvider(this)
     }

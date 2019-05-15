@@ -1,7 +1,7 @@
 // @flow
 /* eslint-disable no-undef */
 
-import React, { Component } from 'react'
+import React from 'react'
 
 import type { CreateProvider, State } from '../types'
 
@@ -12,7 +12,7 @@ const EnhancedProvider: CreateProvider = (
   Provider,
   initialState,
 ) =>
-  class EnhancedProvider extends Component<Props, State> {
+  class EnhancedProvider extends React.Component<Props, State> {
     constructor(props) {
       super(props)
       this.state = props.initialState || initialState

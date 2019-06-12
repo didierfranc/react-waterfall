@@ -26,6 +26,9 @@ const connect: CreateConnect = Consumer => mapStateToProps => WrappedComponent =
   ConnectedComponent.displayName = `Connect(${WrappedComponent.displayName ||
     WrappedComponent.name ||
     'Unknown'})`
+  if (WrappedComponent.getInitialProps) {
+    ConnectedComponent.getInitialProps = WrappedComponent.getInitialProps
+  }
 
   return ConnectedComponent
 }

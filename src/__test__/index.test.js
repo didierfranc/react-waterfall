@@ -20,6 +20,7 @@ beforeEach(() => {
         const { stars } = await fakeFetch()
         return { stars }
       },
+      doNothing: () => {},
     },
   }
 
@@ -127,4 +128,41 @@ test('connect(): allow ownprops from mapStateToProps', async () => {
 
   const instance = tree.root.findByType(Stars).children[0]
   expect(instance.props.stars).toBe(20000)
+})
+
+test('state is not updated when nothing is returned', async () => {
+  const { Provider, connect, actions } = store
+  const didUpdateSpy = jest.fn()
+
+  /* eslint-disable react/no-multi-comp,react/prop-types */
+  class Count extends React.PureComponent {
+    componentDidUpdate() {
+      didUpdateSpy()
+    }
+
+    render() {
+      return this.props.count
+    }
+  }
+  const ConnectedCount = connect(({ count }) => ({ count }))(Count)
+  /* eslint-enable */
+
+  const App = () => (
+    <Provider>
+      <ConnectedCount />
+    </Provider>
+  )
+  const tree = renderer.create(<App />)
+
+  const instance = tree.root.findByType(ConnectedCount).children[0]
+  instance.componentDidUpdate = jest.fn()
+  expect(tree.toJSON()).toMatchSnapshot()
+
+  await actions.increment()
+  expect(didUpdateSpy).toHaveBeenCalledTimes(1)
+  await actions.increment()
+  expect(didUpdateSpy).toHaveBeenCalledTimes(2)
+  actions.doNothing()
+  expect(didUpdateSpy).toHaveBeenCalledTimes(2)
+  expect(tree.toJSON()).toMatchSnapshot()
 })

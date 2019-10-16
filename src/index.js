@@ -46,6 +46,9 @@ const createStore: CreateStore = (
   let state = initialState
 
   const setState: CustomSetState = (action, result, ...args) => {
+    if (typeof result === 'undefined') {
+      return Promise.resolve()
+    }
     state = { ...state, ...result }
     return new Promise(resolve => {
       const subscriptions = getSubscriptions()
@@ -68,7 +71,7 @@ const createStore: CreateStore = (
 
         const result = actionsCreators[v](state, actions, ...args)
 
-        return result.then
+        return (typeof result === 'object' && result.then)
           ? result.then(result => setState(v, result, ...args))
           : setState(v, result, ...args)
       },

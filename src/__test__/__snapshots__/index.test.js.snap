@@ -9,3 +9,7 @@ exports[`render provider with its children 1`] = `
   Children
 </h1>
 `;
+
+exports[`state is not updated when nothing is returned 1`] = `"0"`;
+
+exports[`state is not updated when nothing is returned 2`] = `"2"`;
